@@ -6,6 +6,7 @@ from telethon import TelegramClient
 from keep_alive import keep_alive
 from lib.bot_random_pacar import register as register_bot1
 from lib.bot_anony_meet import register as register_bot2
+from lib.group_sender import run as run_group
 
 logging.basicConfig(
     level=logging.INFO,
@@ -40,6 +41,9 @@ async def run_bot():
     await start_bot1()
     await asyncio.sleep(8)
     await start_bot2()
+
+    # Jalankan grup sender sebagai background task
+    asyncio.get_event_loop().create_task(run_group(client))
 
     await client.run_until_disconnected()
 
