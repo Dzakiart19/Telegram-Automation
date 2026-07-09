@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 LINK = 'free bokep update setiap hari 👀 https://vidorey.web.app'
 
 GROUPS = [
-    ('cari_teman_online_sejati', LINK),
     ('cari_teman_kenalan_pacar2', LINK),
     ('BEBAS_SHARE_Link_Apk', LINK),
     ('cari_kenalan_teman_chat_online', LINK),
