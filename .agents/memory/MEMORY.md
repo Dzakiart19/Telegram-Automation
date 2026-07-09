@@ -1,0 +1,2 @@
+- [Telethon session/version pinning](telethon-session-version.md) — pyproject.toml lock must match dev's installed Telethon version or prod crashes reading tele.session.
+- [Deployment target for this bot](deployment-target.md) — must be `vm`, not `cloudrun`; watch for it silently reverting.
