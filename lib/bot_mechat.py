@@ -55,8 +55,8 @@ def register(client):
                 return
             state["busy"] = True
             try:
-                logger.info("[Bot4] Match! Jeda 10 detik...")
-                await asyncio.sleep(10)
+                logger.info("[Bot4] Match! Jeda 3 detik...")
+                await asyncio.sleep(3)
                 await client.send_message(TARGET, LINK)
                 state["promo_sent"] = True
                 stats.increment('mechat')
