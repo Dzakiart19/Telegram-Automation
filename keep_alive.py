@@ -24,6 +24,7 @@ def home():
         'AnonyMeetBot':     '🤖 @AnonyMeetBot',
         'chatbot':          '🤖 @chatbot',
         'mechat':           '🤖 @mechat',
+        'botchatanonymouss_bot': '🤖 @botchatanonymouss_bot',
         'auto_reply':       '💬 Auto-Reply DM',
     }
     for bot, count in sorted(s["per_bot"].items(), key=lambda x: -x[1]):
