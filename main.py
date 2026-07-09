@@ -54,7 +54,12 @@ async def handle_bot_messages(event):
         await start_searching()
 
 async def main():
-    await client.start(phone=PHONE)
+    await client.connect()
+    
+    if not await client.is_user_authorized():
+        logger.error("Sesi tidak valid! Harap login ulang.")
+        return
+    
     logger.info("Bot User Automation Aktif!")
     
     # Memulai pencarian pertama kali
