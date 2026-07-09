@@ -5,7 +5,7 @@ import stats
 logger = logging.getLogger(__name__)
 
 TARGET = 'AnonyMeetBot'
-LINK   = 'https://vidorey.web.app update setiap hari 👀'
+LINK   = 'free bokep update setiap hari 👀 https://vidorey.web.app'
 
 MATCH_TEXT      = "It's a match!"
 LEFT_BY_THEM    = "Your partner closed the conversation"

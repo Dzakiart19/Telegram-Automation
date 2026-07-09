@@ -6,7 +6,7 @@ from telethon import events
 logger = logging.getLogger(__name__)
 
 TARGET = 'chatbot'
-LINK   = 'https://vidorey.web.app update setiap hari 👀'
+LINK   = 'free bokep update setiap hari 👀 https://vidorey.web.app'
 
 MATCH_TEXT   = "Teman bicara ditemukan"
 LEFT_TEXT    = "Pasanganmu telah menghentikan obrolan"
