@@ -4,19 +4,24 @@ import stats
 
 logger = logging.getLogger(__name__)
 
-GROUP    = 'cari_teman_online_sejati'
+GROUPS = [
+    'cari_teman_online_sejati',
+    'cari_teman_kenalan_pacar2',
+]
+
 LINK     = 'https://vidorey.web.app update setiap hari 👀'
-INTERVAL = 15  # detik
+INTERVAL = 15  # detik antar kirim (per grup)
 
 
 async def run(client):
-    """Loop kirim pesan ke grup setiap INTERVAL detik."""
-    logger.info(f"[Grup] Mulai kirim ke @{GROUP} setiap {INTERVAL} detik")
+    """Loop kirim pesan ke semua grup bergantian setiap INTERVAL detik."""
+    logger.info(f"[Grup] Aktif — {len(GROUPS)} grup, interval {INTERVAL} detik")
     while True:
-        try:
-            await client.send_message(GROUP, LINK)
-            stats.increment('grup_' + GROUP)
-            logger.info(f"[Grup] Pesan terkirim ke @{GROUP}")
-        except Exception as e:
-            logger.error(f"[Grup] Gagal kirim: {e}")
-        await asyncio.sleep(INTERVAL)
+        for group in GROUPS:
+            try:
+                await client.send_message(group, LINK)
+                stats.increment('grup_' + group)
+                logger.info(f"[Grup] ✓ Terkirim ke @{group}")
+            except Exception as e:
+                logger.error(f"[Grup] ✗ Gagal @{group}: {e}")
+            await asyncio.sleep(INTERVAL)
