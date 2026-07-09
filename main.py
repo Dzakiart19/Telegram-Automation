@@ -6,6 +6,7 @@ from telethon import TelegramClient
 from keep_alive import keep_alive
 from lib.bot_random_pacar import register as register_bot1
 from lib.bot_anony_meet import register as register_bot2
+from lib.bot_chatbot import register as register_bot3
 
 
 logging.basicConfig(
@@ -23,9 +24,10 @@ PHONE    = os.getenv('PHONE',    '+6285962694573')
 async def run_bot():
     client = TelegramClient('tele', API_ID, API_HASH)
 
-    # Daftarkan kedua bot, dapatkan fungsi start masing-masing
+    # Daftarkan semua bot, dapatkan fungsi start masing-masing
     start_bot1 = register_bot1(client)
     start_bot2 = register_bot2(client)
+    start_bot3 = register_bot3(client)
 
     logger.info("Menghubungkan ke Telegram...")
     await client.connect()
@@ -37,10 +39,12 @@ async def run_bot():
     me = await client.get_me()
     logger.info(f"Login: {me.first_name} (@{me.username})")
 
-    # Bot1 mulai duluan, Bot2 menyusul 8 detik kemudian
+    # Bot mulai bergantian dengan jeda agar tidak bersamaan
     await start_bot1()
     await asyncio.sleep(8)
     await start_bot2()
+    await asyncio.sleep(8)
+    await start_bot3()
 
     await client.run_until_disconnected()
 
