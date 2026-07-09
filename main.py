@@ -8,6 +8,7 @@ from lib.bot_random_pacar import register as register_bot1
 from lib.bot_anony_meet import register as register_bot2
 from lib.bot_chatbot import register as register_bot3
 from lib import group_sender
+from lib import auto_reply
 
 
 logging.basicConfig(
@@ -29,6 +30,7 @@ async def run_bot():
     start_bot1 = register_bot1(client)
     start_bot2 = register_bot2(client)
     start_bot3 = register_bot3(client)
+    auto_reply.register(client)
 
     logger.info("Menghubungkan ke Telegram...")
     await client.connect()
