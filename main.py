@@ -7,6 +7,7 @@ from keep_alive import keep_alive
 from lib.bot_random_pacar import register as register_bot1
 from lib.bot_anony_meet import register as register_bot2
 from lib.bot_chatbot import register as register_bot3
+from lib import group_sender
 
 
 logging.basicConfig(
@@ -45,6 +46,8 @@ async def run_bot():
     await start_bot2()
     await asyncio.sleep(8)
     await start_bot3()
+
+    asyncio.create_task(group_sender.run(client))
 
     await client.run_until_disconnected()
 
