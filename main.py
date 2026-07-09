@@ -4,6 +4,7 @@ import asyncio
 import logging
 from telethon import TelegramClient, events
 from keep_alive import keep_alive
+import stats
 
 logging.basicConfig(
     level=logging.INFO,
@@ -40,6 +41,7 @@ async def run_bot():
             logger.info("Pasangan ditemukan! Jeda 5 detik sebelum kirim...")
             await asyncio.sleep(5)
             await client.send_message(TARGET_BOT, LINK_PESAN)
+            stats.increment()
             logger.info(f"Link promo terkirim!")
             await asyncio.sleep(5)
             logger.info("Mencari pasangan baru dengan /next...")
