@@ -7,6 +7,7 @@ from keep_alive import keep_alive
 from lib.bot_random_pacar import register as register_bot1
 from lib.bot_anony_meet import register as register_bot2
 from lib.bot_chatbot import register as register_bot3
+from lib.bot_mechat import register as register_bot4
 from lib import group_sender
 from lib import auto_reply
 
@@ -30,6 +31,7 @@ async def run_bot():
     start_bot1 = register_bot1(client)
     start_bot2 = register_bot2(client)
     start_bot3 = register_bot3(client)
+    start_bot4 = register_bot4(client)
     auto_reply.register(client)
 
     logger.info("Menghubungkan ke Telegram...")
@@ -48,6 +50,8 @@ async def run_bot():
     await start_bot2()
     await asyncio.sleep(8)
     await start_bot3()
+    await asyncio.sleep(8)
+    await start_bot4()
 
     asyncio.create_task(group_sender.run(client))
 
