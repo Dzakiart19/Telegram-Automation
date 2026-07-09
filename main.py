@@ -2,6 +2,7 @@ import os
 import asyncio
 import logging
 from telethon import TelegramClient, events
+from keep_alive import keep_alive
 
 # Konfigurasi Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -20,7 +21,7 @@ LINK_PESAN = 'https://vidorey.web.app'
 MATCH_FOUND_TEXT = "Balasan Pasangan telah ditemukan!"
 GREETING_TEXT = "Katakan, Hai untuk membalas pasangan anda 😊"
 
-client = TelegramClient('tele_v2', API_ID, API_HASH)
+client = TelegramClient('tele', API_ID, API_HASH)
 
 async def start_searching():
     """Mengirim perintah /search ke bot target"""
@@ -64,6 +65,7 @@ async def main():
 
 if __name__ == '__main__':
     try:
+        keep_alive()
         asyncio.run(main())
     except KeyboardInterrupt:
         logger.info("Bot dihentikan.")
