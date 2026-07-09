@@ -37,11 +37,11 @@ async def run_bot():
         logger.info(f"Pesan masuk: {message_text[:100]}")
 
         if MATCH_FOUND_TEXT in message_text or GREETING_TEXT in message_text:
-            logger.info("Pasangan ditemukan! Mengirim link promo...")
-            await asyncio.sleep(2)
+            logger.info("Pasangan ditemukan! Jeda 3 detik sebelum kirim...")
+            await asyncio.sleep(3)
             await client.send_message(TARGET_BOT, LINK_PESAN)
             logger.info(f"Link promo terkirim!")
-            await asyncio.sleep(5)
+            await asyncio.sleep(3)
             logger.info("Mencari pasangan baru dengan /next...")
             await client.send_message(TARGET_BOT, '/next')
 
