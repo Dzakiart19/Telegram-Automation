@@ -47,7 +47,7 @@ def register(client):
                 state["promo_sent"] = True
                 stats.increment('random_pacar_bot')
                 logger.info("[Bot1] Promo terkirim!")
-                await asyncio.sleep(5)
+                await asyncio.sleep(10)
                 await next_partner()
             finally:
                 state["busy"] = False
