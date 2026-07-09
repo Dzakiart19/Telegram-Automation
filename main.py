@@ -23,9 +23,13 @@ API_ID   = os.getenv('API_ID',   '26372402')
 API_HASH = os.getenv('API_HASH', 'a2732d77a9abc513db065170f563a603')
 PHONE    = os.getenv('PHONE',    '+6285962694573')
 
+IS_DEPLOYMENT = bool(os.getenv('REPLIT_DEPLOYMENT'))
+SESSION_NAME  = 'tele_prod' if IS_DEPLOYMENT else 'tele_dev'
+
 
 async def run_bot():
-    client = TelegramClient('tele', API_ID, API_HASH)
+    logger.info(f"Menggunakan session: {SESSION_NAME} (deployment={IS_DEPLOYMENT})")
+    client = TelegramClient(SESSION_NAME, API_ID, API_HASH)
 
     # Daftarkan semua bot, dapatkan fungsi start masing-masing
     start_bot1 = register_bot1(client)
