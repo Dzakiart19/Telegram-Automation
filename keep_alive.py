@@ -18,9 +18,15 @@ def home():
     bot_labels = {
         'random_pacar_bot': '🤖 @random_pacar_bot',
         'AnonyMeetBot':     '🤖 @AnonyMeetBot',
+        'chatbot':          '🤖 @chatbot',
+        'mechat':           '🤖 @mechat',
+        'auto_reply':       '💬 Auto-Reply DM',
     }
-    for bot, count in s["per_bot"].items():
-        label = bot_labels.get(bot, bot)
+    for bot, count in sorted(s["per_bot"].items(), key=lambda x: -x[1]):
+        if bot.startswith('grup_'):
+            label = f"👥 @{bot[len('grup_'):]}"
+        else:
+            label = bot_labels.get(bot, f"🤖 @{bot}")
         per_bot_rows += f"<tr><td>{label}</td><td><b>{count}</b></td></tr>"
     if not per_bot_rows:
         per_bot_rows = "<tr><td colspan='2' style='color:#888'>Belum ada data</td></tr>"
