@@ -8,7 +8,7 @@ LINK    = 'free bokep update setiap hari 👀 https://vidorey.web.app'
 PC_LINK = 'pc sini'
 
 GROUPS = [
-    ('cari_teman_kenalan_pacar2', LINK),
+    ('cari_teman_kenalan_pacar2', PC_LINK),
     ('BEBAS_SHARE_Link_Apk', LINK),
     ('cari_kenalan_teman_chat_online', LINK),
     ('cari_teman_kenalan_pacar', PC_LINK),
