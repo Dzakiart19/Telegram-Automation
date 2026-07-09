@@ -4,6 +4,10 @@ import stats
 
 app = Flask('')
 
+@app.route('/health')
+def health():
+    return {"status": "ok"}, 200
+
 @app.route('/')
 def home():
     s = stats.get_stats()
