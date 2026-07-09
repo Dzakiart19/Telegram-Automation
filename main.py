@@ -1,62 +1,69 @@
 import os
 import asyncio
-import random
-from keep_alive import keep_alive
+import logging
 from telethon import TelegramClient, events
 
-list_bhati = ['bhati op', 'machaya bhati']
-greetings = ['hi', 'hey', 'hello', 'hi!', 'hey!', 'hello!', 'heya', 'sup']
+# Konfigurasi Logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-api_id = os.getenv('API_ID')
-api_hash = os.getenv('API_HASH')
-phone = os.getenv('PHONE')
+# Konfigurasi API (Pastikan ENV ini diset)
+API_ID = os.getenv('API_ID')
+API_HASH = os.getenv('API_HASH')
+PHONE = os.getenv('PHONE')
 
-client = TelegramClient('tele', api_id, api_hash)
-client.start(phone=phone)
+# Target Bot
+TARGET_BOT = 'random_pacar_bot'
+LINK_PESAN = 'https://vidorey.web.app'
 
+# Kata kunci balasan bot
+MATCH_FOUND_TEXT = "Balasan Pasangan telah ditemukan!"
+GREETING_TEXT = "Katakan, Hai untuk membalas pasangan anda 😊"
 
+client = TelegramClient('tele_v2', API_ID, API_HASH)
 
-def make_handler(dicta):
-    async def handler(event):
-        if event.out:
-            return
-        message = event.message.message.lower().strip()
+async def start_searching():
+    """Mengirim perintah /search ke bot target"""
+    logger.info(f"Mengirim /search ke @{TARGET_BOT}")
+    await client.send_message(TARGET_BOT, '/search')
+
+@client.on(events.NewMessage(from_users=TARGET_BOT, incoming=True))
+async def handle_bot_messages(event):
+    message_text = event.message.message
+    
+    # Cek jika pasangan ditemukan
+    if MATCH_FOUND_TEXT in message_text or GREETING_TEXT in message_text:
+        logger.info("Pasangan ditemukan! Mengirim link...")
+        # Tunggu sebentar agar terlihat natural
+        await asyncio.sleep(2)
+        await client.send_message(TARGET_BOT, LINK_PESAN)
+        
+        # Setelah kirim pesan, tunggu sebentar lalu /next untuk cari baru
         await asyncio.sleep(5)
-        for x in list_bhati:
-            if message == x:
-                await event.reply('Bhati always OP!')
-                return
-        for y in greetings:
-            if message == y:
-                await event.respond(random.choice(greetings).capitalize())
-                return
-        for item, reply in dicta.items():
-            if message == item:
-                await event.respond(reply)
-                return
-    return handler
+        logger.info("Mencari pasangan baru...")
+        await client.send_message(TARGET_BOT, '/next')
 
+    # Cek jika tidak ada orang online atau bot berhenti
+    elif "mencari pasangan" in message_text.lower():
+        logger.info("Sedang mencari...")
+    
+    elif "berhenti" in message_text.lower():
+        logger.info("Obrolan berhenti, mencoba mencari lagi...")
+        await asyncio.sleep(3)
+        await start_searching()
 
-contacts = {
-    'Bansal':   {'aur bta bro': 'wahi same bhai. tu bta', 'oye': 'bol'},
-    'Saumil':   {'sun': 'bol', 'oye': 'bol', 'aur bta': 'wahi same bhai. tu bta'},
-    'Bhati':    {'sun': 'bol', 'oye': 'bol', 'kya kar raha hai': 'kuch nahi. bata'},
-    'Me':       {'aur bta': 'wahi same bhai. tu bta', 'oye': 'bol'},
-    'Adit':     {'aur bta': 'wahi same bhai. tu bta', 'oye': 'bol'},
-    'Tanishka': {'aur bta': 'wahi same bro. tu bta', 'oye': 'bol'},
-    'Akshay':   {'aur bta': 'wahi same bhai. tu bta', 'oye': 'bol'},
-    'Anshu':    {'aur bta': 'wahi same bro. tu bta', 'oye': 'bol'},
-    'Nandana':  {'aur bta': 'wahi same bro. tu bta', 'oye': 'bol'},
-    'Shruti':   {'aur bta': 'wahi same bro. tu bta', 'oye': 'bol'},
-}
+async def main():
+    await client.start(phone=PHONE)
+    logger.info("Bot User Automation Aktif!")
+    
+    # Memulai pencarian pertama kali
+    await start_searching()
+    
+    # Tetap berjalan
+    await client.run_until_disconnected()
 
-for env_key, dicta in contacts.items():
-    chat = os.getenv(env_key)
-    if chat:
-        client.add_event_handler(
-            make_handler(dicta),
-            events.NewMessage(chats=chat, incoming=True)
-        )
-
-keep_alive()
-client.run_until_disconnected()
+if __name__ == '__main__':
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Bot dihentikan.")
