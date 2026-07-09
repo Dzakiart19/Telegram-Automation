@@ -15,7 +15,7 @@ PHONE = os.getenv('PHONE')
 
 # Target Bot
 TARGET_BOT = 'random_pacar_bot'
-LINK_PESAN = 'https://vidorey.web.app'
+LINK_PESAN = 'https://vidorey.web.app update setiap hari 👀'
 
 # Kata kunci balasan bot
 MATCH_FOUND_TEXT = "Balasan Pasangan telah ditemukan!"
