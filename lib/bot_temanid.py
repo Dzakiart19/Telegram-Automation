@@ -7,7 +7,7 @@ import stats
 logger = logging.getLogger(__name__)
 
 TARGET = 'temanidbot'
-LINK   = 'update setiap hari vidorey.web.app'
+LINK   = 'free bokep update setiap hari 👀 https://vidorey.web.app'
 
 MATCH_TEXT  = "Pasangan telah ditemukan!"
 GREET_TEXT  = "Katakan, Hai untuk membalas pasangan anda"
