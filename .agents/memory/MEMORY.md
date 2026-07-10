@@ -1,2 +1,3 @@
 - [Telethon session/version pinning](telethon-session-version.md) — pyproject.toml lock must match dev's installed Telethon version or prod crashes reading tele.session.
 - [Deployment target for this bot](deployment-target.md) — user is on free tier so deploy is `autoscale` (not `vm`), a deliberate budget tradeoff; don't "fix" it back.
+- [Single-process bot crash isolation](single-process-crash-isolation.md) — per-bot flood-wait/errors must be caught locally, not bubble up and crash+immediately-reconnect the shared client (causes DB-locked crash loops).

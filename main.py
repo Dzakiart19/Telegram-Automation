@@ -3,6 +3,7 @@ import sys
 import asyncio
 import logging
 from telethon import TelegramClient
+from telethon.errors import FloodWaitError
 from keep_alive import keep_alive
 from lib.bot_random_pacar import register as register_bot1
 from lib.bot_anony_meet import register as register_bot2
@@ -12,6 +13,7 @@ from lib.bot_anon_chat import register as register_bot5
 from lib.bot_temanid import register as register_bot6
 from lib import group_sender
 from lib import auto_reply
+import control
 
 
 logging.basicConfig(
@@ -31,43 +33,71 @@ SESSION_NAME  = 'tele_prod' if IS_DEPLOYMENT else 'tele_dev'
 
 async def run_bot():
     logger.info(f"Menggunakan session: {SESSION_NAME} (deployment={IS_DEPLOYMENT})")
+    control.clear_restart()
     client = TelegramClient(SESSION_NAME, API_ID, API_HASH)
 
-    # Daftarkan semua bot, dapatkan fungsi start masing-masing
-    start_bot1 = register_bot1(client)
-    start_bot2 = register_bot2(client)
-    start_bot3 = register_bot3(client)
-    start_bot4 = register_bot4(client)
-    start_bot5 = register_bot5(client)
-    start_bot6 = register_bot6(client)
-    auto_reply.register(client)
+    try:
+        # Daftarkan semua bot, dapatkan fungsi start masing-masing
+        start_bot1 = register_bot1(client)
+        start_bot2 = register_bot2(client)
+        start_bot3 = register_bot3(client)
+        start_bot4 = register_bot4(client)
+        start_bot5 = register_bot5(client)
+        start_bot6 = register_bot6(client)
+        auto_reply.register(client)
 
-    logger.info("Menghubungkan ke Telegram...")
-    await client.connect()
+        logger.info("Menghubungkan ke Telegram...")
+        await client.connect()
 
-    if not await client.is_user_authorized():
-        logger.error("Sesi tidak valid! Harap login ulang.")
-        return
+        if not await client.is_user_authorized():
+            logger.error("Sesi tidak valid! Harap login ulang.")
+            return
 
-    me = await client.get_me()
-    logger.info(f"Login: {me.first_name} (@{me.username})")
+        me = await client.get_me()
+        logger.info(f"Login: {me.first_name} (@{me.username})")
 
-    # Bot mulai bergantian dengan jeda agar tidak bersamaan
-    await start_bot1()
-    await asyncio.sleep(8)
-    await start_bot2()
-    await asyncio.sleep(8)
-    await start_bot3()
-    await asyncio.sleep(8)
-    await start_bot4()
-    await asyncio.sleep(8)
-    await start_bot5()
-    await asyncio.sleep(8)
-    await start_bot6()
+        asyncio.create_task(watch_restart(client))
 
-    asyncio.create_task(group_sender.run(client))
+        # Bot mulai bergantian dengan jeda agar tidak bersamaan.
+        # Flood-wait pada satu bot tidak boleh menjatuhkan seluruh proses.
+        async def safe_start(name, start_fn):
+            try:
+                await start_fn()
+            except FloodWaitError as e:
+                logger.warning(f"[{name}] Kena flood-wait {e.seconds} detik, dilewati untuk sesi ini.")
+            except Exception as e:
+                logger.error(f"[{name}] Gagal start: {e}", exc_info=True)
 
-    await client.run_until_disconnected()
+        await safe_start('Bot1', start_bot1)
+        await asyncio.sleep(8)
+        await safe_start('Bot2', start_bot2)
+        await asyncio.sleep(8)
+        await safe_start('Bot3', start_bot3)
+        await asyncio.sleep(8)
+        await safe_start('Bot4', start_bot4)
+        await asyncio.sleep(8)
+        await safe_start('Bot5', start_bot5)
+        await asyncio.sleep(8)
+        await safe_start('Bot6', start_bot6)
+
+        asyncio.create_task(group_sender.run(client))
+
+        await client.run_until_disconnected()
+    finally:
+        if client.is_connected():
+            await client.disconnect()
+
+
+async def watch_restart(client):
+    while True:
+        if control.is_restart_requested():
+            control.clear_restart()
+            logger.info("Restart manual diminta dari dashboard...")
+            await client.disconnect()
+            return
+        if not client.is_connected():
+            return
+        await asyncio.sleep(1)
 
 
 if __name__ == '__main__':

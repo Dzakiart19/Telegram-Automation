@@ -1,12 +1,18 @@
 from flask import Flask
 from threading import Thread
 import stats
+import control
 
 app = Flask('')
 
 @app.route('/health')
 def health():
     return {"status": "ok"}, 200
+
+@app.route('/restart', methods=['POST'])
+def restart():
+    control.request_restart()
+    return {"status": "restart requested"}, 200
 
 @app.route('/')
 def home():
@@ -74,6 +80,29 @@ def home():
   </div>
 
   <p style="margin-top:14px">🕐 Terakhir kirim: <span class="badge">{s['last_sent'] or '-'}</span></p>
+
+  <button id="restartBtn" onclick="restartBot()" style="margin-top:16px; background:#ff5252; color:#fff; border:none; border-radius:8px; padding:12px 24px; font-size:14px; font-weight:bold; cursor:pointer;">🔄 Restart Bot</button>
+  <p id="restartMsg" style="margin-top:8px; font-size:13px; color:#aaa;"></p>
+
+  <script>
+    function restartBot() {{
+      var btn = document.getElementById('restartBtn');
+      var msg = document.getElementById('restartMsg');
+      btn.disabled = true;
+      btn.innerText = 'Merestart...';
+      fetch('/restart', {{ method: 'POST' }})
+        .then(r => r.json())
+        .then(data => {{
+          msg.innerText = '✅ Restart diminta. Bot akan aktif kembali dalam beberapa detik...';
+          setTimeout(() => location.reload(), 8000);
+        }})
+        .catch(err => {{
+          msg.innerText = '❌ Gagal restart: ' + err;
+          btn.disabled = false;
+          btn.innerText = '🔄 Restart Bot';
+        }});
+    }}
+  </script>
 
   <h2>📌 Per Bot (Total)</h2>
   <table>
