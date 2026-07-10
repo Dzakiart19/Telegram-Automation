@@ -11,6 +11,11 @@ GROUPS = [
     ('cari_teman_kenalan_pacar2', PC_LINK),
     ('BEBAS_SHARE_Link_Apk', LINK),
     ('cari_teman_kenalan_pacar', PC_LINK),
+    ('cari_pacar_temen_online', LINK),
+    ('CARI_PACAR_TEMEN_BESTIE', LINK),
+    ('Cari_Kenalan_Bestie_Online', LINK),
+    ('Cari_Teman_Online_Pacar_Sahabat', LINK),
+    ('cari_teman_sahabat_chat', LINK),
 ]
 
 INTERVAL = 15  # detik antar kirim (per grup)
