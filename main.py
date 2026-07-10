@@ -14,6 +14,7 @@ from lib.bot_temanid import register as register_bot6
 from lib import group_sender
 from lib import auto_reply
 import control
+import stats
 
 
 logging.basicConfig(
@@ -29,6 +30,8 @@ PHONE    = os.getenv('PHONE',    '+6285962694573')
 
 IS_DEPLOYMENT = bool(os.getenv('REPLIT_DEPLOYMENT'))
 SESSION_NAME  = 'tele_prod' if IS_DEPLOYMENT else 'tele_dev'
+
+IDLE_TIMEOUT_SECONDS = 5 * 60
 
 
 async def run_bot():
@@ -57,6 +60,7 @@ async def run_bot():
         logger.info(f"Login: {me.first_name} (@{me.username})")
 
         asyncio.create_task(watch_restart(client))
+        asyncio.create_task(idle_watchdog(client))
 
         # Bot mulai bergantian dengan jeda agar tidak bersamaan.
         # Flood-wait pada satu bot tidak boleh menjatuhkan seluruh proses.
@@ -98,6 +102,21 @@ async def watch_restart(client):
         if not client.is_connected():
             return
         await asyncio.sleep(1)
+
+
+async def idle_watchdog(client):
+    while True:
+        await asyncio.sleep(15)
+        if not client.is_connected():
+            return
+        idle = stats.seconds_since_last_activity()
+        if idle >= IDLE_TIMEOUT_SECONDS:
+            logger.warning(
+                f"Tidak ada aktivitas kirim promo selama {int(idle)} detik "
+                f"(> {IDLE_TIMEOUT_SECONDS}s). Auto-restart..."
+            )
+            await client.disconnect()
+            return
 
 
 if __name__ == '__main__':

@@ -9,22 +9,30 @@ _data = {
     "today_date": datetime.now().strftime("%Y-%m-%d"),
     "history": {},
     "last_sent": None,
+    "last_sent_at": datetime.now(),
     "per_bot": {},
 }
 
 def increment(bot_name="unknown"):
     with _lock:
-        today = datetime.now().strftime("%Y-%m-%d")
+        now = datetime.now()
+        today = now.strftime("%Y-%m-%d")
         if _data["today_date"] != today:
             _data["today_date"] = today
             _data["today_count"] = 0
         _data["today_count"] += 1
         _data["total_all"] += 1
         _data["history"][today] = _data["today_count"]
-        _data["last_sent"] = datetime.now().strftime("%H:%M:%S")
+        _data["last_sent"] = now.strftime("%H:%M:%S")
+        _data["last_sent_at"] = now
         if bot_name not in _data["per_bot"]:
             _data["per_bot"][bot_name] = 0
         _data["per_bot"][bot_name] += 1
+
+def seconds_since_last_activity():
+    with _lock:
+        last = _data["last_sent_at"]
+    return (datetime.now() - last).total_seconds()
 
 def get_stats():
     with _lock:
