@@ -3,7 +3,7 @@ import sys
 import asyncio
 import logging
 from telethon import TelegramClient
-from telethon.errors import FloodWaitError
+from telethon.errors import FloodWaitError, AuthKeyDuplicatedError
 from keep_alive import keep_alive
 from lib.bot_random_pacar import register as register_bot1
 from lib.bot_anony_meet import register as register_bot2
@@ -126,7 +126,26 @@ if __name__ == '__main__':
         try:
             logger.info("=== Bot dimulai ===")
             asyncio.run(run_bot())
+            if control.is_auth_key_dead():
+                logger.critical(
+                    "Session dicabut Telegram (AuthKeyDuplicatedError) selama proses berjalan. "
+                    "Menunggu 10 menit sebelum retry — restart cepat tidak akan memperbaiki ini, "
+                    "session harus di-generate ulang (re-login) secara manual."
+                )
+                control.clear_auth_key_dead()
+                time.sleep(600)
+                continue
             logger.info("Disconnect. Restart dalam 5 detik...")
+        except AuthKeyDuplicatedError:
+            logger.critical(
+                "AuthKeyDuplicatedError saat connect: session ini sudah dicabut Telegram karena "
+                "dipakai dari 2 tempat sekaligus (misal >1 instance autoscale berbagi session yang "
+                "sama). Restart cepat TIDAK akan memperbaiki ini — session harus di-generate ulang "
+                "(re-login) secara manual. Menunggu 10 menit sebelum mencoba lagi agar tidak spam log."
+            )
+            control.clear_auth_key_dead()
+            time.sleep(600)
+            continue
         except Exception as e:
             logger.error(f"ERROR: {e}", exc_info=True)
             logger.info("Restart dalam 5 detik...")

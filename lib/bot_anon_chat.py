@@ -3,6 +3,7 @@ import logging
 from telethon import events
 
 import stats
+from lib.telegram_safety import safe_send_message
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +47,10 @@ def register(client):
             try:
                 logger.info("[Bot5] Match! Jeda 5 detik...")
                 await asyncio.sleep(5)
-                await client.send_message(TARGET, LINK)
-                state["promo_sent"] = True
-                stats.increment('botchatanonymouss_bot')
-                logger.info("[Bot5] Promo terkirim!")
+                if await safe_send_message(client, TARGET, LINK, label='Bot5'):
+                    state["promo_sent"] = True
+                    stats.increment('botchatanonymouss_bot')
+                    logger.info("[Bot5] Promo terkirim!")
                 await asyncio.sleep(10)
                 await next_partner()
             finally:

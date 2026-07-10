@@ -1,0 +1,12 @@
+# Telethon session files - contain live login credentials, must never be committed
+*.session
+*.session-journal
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Local login helper temp state (if regenerated in future)
+.login_state.pkl

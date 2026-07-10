@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import stats
+from telethon.errors import AuthKeyDuplicatedError, UserBannedInChannelError
+from lib.telegram_safety import safe_send_message
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +29,19 @@ async def run(client):
     while True:
         for group, message in GROUPS:
             try:
-                await client.send_message(group, message)
-                stats.increment('grup_' + group)
-                logger.info(f"[Grup] ✓ Terkirim ke @{group}")
-            except Exception as e:
-                logger.error(f"[Grup] ✗ Gagal @{group}: {e}")
+                ok = await safe_send_message(client, group, message, label='Grup')
+                if ok:
+                    stats.increment('grup_' + group)
+                    logger.info(f"[Grup] ✓ Terkirim ke @{group}")
+            except UserBannedInChannelError:
+                logger.critical(
+                    "[Grup] Akun kena restriksi 'banned from sending messages in supergroups/"
+                    "channels' (berlaku akun-wide, bukan per-grup). Menghentikan loop grup "
+                    "selama 30 menit agar tidak memperparah restriksi."
+                )
+                await asyncio.sleep(1800)
+                break
+            except AuthKeyDuplicatedError:
+                logger.critical("[Grup] AuthKeyDuplicatedError, menghentikan loop grup.")
+                return
             await asyncio.sleep(INTERVAL)
